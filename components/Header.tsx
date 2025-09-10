@@ -1,0 +1,2 @@
+'use client'
+export default function Header({name}:{name?:string}){return (<div className="flex items-center justify-between mb-6"><div><div className="text-2xl font-bold">PaperTradeX</div><div className="small">Simulated trading environment</div></div><div className="flex items-center gap-4"><div className="small text-gray-300">Welcome</div><div className="card px-3 py-2 rounded-lg">{name||'Guest'}</div></div></div>)}
