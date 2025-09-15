@@ -2,12 +2,6 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/api/trade": "pages/api/trade.js",
   "/api/state": "pages/api/state.js",
-  "/": "pages/index.js",
-  "/trade": "pages/trade.js",
-  "/market": "pages/market.js",
-  "/api/market": "pages/api/market.js",
-  "/profile": "pages/profile.js",
-  "/portfolio": "pages/portfolio.js"
+  "/": "pages/index.js"
 }
