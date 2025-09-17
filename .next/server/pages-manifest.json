@@ -2,13 +2,12 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/": "pages/index.js",
   "/api/state": "pages/api/state.js",
-  "/api/trade": "pages/api/trade.js",
+  "/": "pages/index.js",
   "/portfolio": "pages/portfolio.js",
+  "/trade": "pages/trade.js",
+  "/api/trade": "pages/api/trade.js",
   "/market": "pages/market.js",
   "/api/market": "pages/api/market.js",
-  "/trade": "pages/trade.js",
-  "/profile": "pages/profile.js",
-  "/api/profile": "pages/api/profile.js"
+  "/profile": "pages/profile.js"
 }
