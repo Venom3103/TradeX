@@ -171,4 +171,4 @@ Make sure to set production env vars: DATABASE_URL, JWT_SECRET.
 This project is licensed under the MIT License.
 See the LICENSE file for details.
 
-## Made With Love
+## Made With ❤️
