@@ -1,4 +1,27 @@
-'use client'
-import { useState } from 'react'
-import { useRouter } from 'next/router'
-export default function LoginPage(){ const [email,setEmail]=useState('demo@example.com'); const [password,setPassword]=useState(''); const router=useRouter(); async function submit(e:any){ e.preventDefault(); const res = await fetch('/api/profile',{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ login:true, email, password }) }); if(res.ok) router.push('/'); else { const d=await res.json(); alert(d?.error||'Login failed') } } return (<div className="min-h-screen flex items-center justify-center p-6"><form onSubmit={submit} className="card p-6 max-w-md w-full"><h2 className="text-2xl mb-4">Login</h2><input className="input mb-3" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com" /><input className="input mb-3" type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="password" /><button className="btn w-full">Login</button></form></div>) }
+import { useState } from 'react';
+import { useRouter } from 'next/router';
+
+export default function Login() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const router = useRouter();
+
+  const handleLogin = async () => {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (res.ok) router.push('/dashboard');
+    else alert(data.message);
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center h-screen">
+      <input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} className="p-2 border mb-2"/>
+      <input placeholder="Password" value={password} type="password" onChange={e => setPassword(e.target.value)} className="p-2 border mb-2"/>
+      <button onClick={handleLogin} className="bg-blue-500 text-white p-2">Login</button>
+    </div>
+  );
+}
