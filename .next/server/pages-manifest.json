@@ -3,9 +3,6 @@
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
   "/": "pages/index.js",
-  "/profile": "pages/profile.js",
-  "/trade": "pages/trade.js",
-  "/api/state": "pages/api/state.js",
-  "/market": "pages/market.js",
-  "/api/market": "pages/api/market.js"
+  "/api/auth/login": "pages/api/auth/login.js",
+  "/auth/login": "pages/auth/login.js"
 }

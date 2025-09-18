@@ -1,2 +1,0 @@
-'use client'
-export default function PortfolioChart(){const points=[10,18,14,28,22,35,30,40];const max=Math.max(...points);const w=600,h=140,gap=w/(points.length-1);const path=points.map((p,i)=>(i===0?'M':'L')+` ${i*gap} ${h-(p/max)*h}`).join(' ');return (<div className="card"><div className="small mb-2">Portfolio performance</div><svg viewBox={`0 0 ${w} ${h}`} className="w-full h-36"><path d={path} fill="none" stroke="#60a5fa" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" /></svg></div>)}

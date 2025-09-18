@@ -8,24 +8,19 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(cuid())
   email     String   @unique
-  name      String
-  password  String?
-  balance   Float    @default(10000)
-  holdings  Json     @default("{}")
+  password  String
+  name      String?
+  wallet    Wallet?
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  trades    Trade[]
 }
 
-model Trade {
-  id        Int      @id @default(autoincrement())
-  symbol    String
-  quantity  Int
-  price     Float
-  side      String
-  userId    Int
-  createdAt DateTime @default(now())
+model Wallet {
+  id        String   @id @default(cuid())
   user      User     @relation(fields: [userId], references: [id])
+  userId    String   @unique
+  balance   Float    @default(0)
+  currency  String   @default("USD")
+  updatedAt DateTime @updatedAt
 }
