@@ -129,10 +129,15 @@ The app will be running on 👉 http://localhost:3000
  ## 📂 Project Structure
 
 / ── prisma/             # Prisma schema + seed files
+
 / ── pages/              # Next.js routes
+
 / ── components/         # Reusable UI components
+
 / ── styles/             # Tailwind / global styles
+
 / ── lib/                # Utilities (auth, db helpers)
+
 / ── public/             # Static assets
 
 ---
@@ -158,10 +163,12 @@ Make sure to set production env vars: DATABASE_URL, JWT_SECRET.
 4. Push to branch (git push origin feature/your-feature)
 
 5. Open a Pull Request
---
+
+---
 
 ## 📄 License
 
 This project is licensed under the MIT License.
-See the LICENSE
- file for details.
+See the LICENSE file for details.
+
+## Made With Love
