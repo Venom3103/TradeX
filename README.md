@@ -123,3 +123,45 @@ The app will be running on 👉 http://localhost:3000
 | `npm run prisma:generate` | Generate Prisma client             |
 | `npm run prisma:migrate`  | Run Prisma migration (create-only) |
 | `npm run seed`            | Seed DB with initial data          |
+
+---
+
+ ## 📂 Project Structure
+
+/ ── prisma/             # Prisma schema + seed files
+/ ── pages/              # Next.js routes
+/ ── components/         # Reusable UI components
+/ ── styles/             # Tailwind / global styles
+/ ── lib/                # Utilities (auth, db helpers)
+/ ── public/             # Static assets
+
+---
+
+ ## 🚀 Deployment
+
+ For production:
+
+```bash
+npm run build
+npm start
+``` 
+Make sure to set production env vars: DATABASE_URL, JWT_SECRET.
+
+ ## 🤝 Contributing
+
+1. Fork & clone the repo
+
+2. Create a feature branch (git checkout -b feature/your-feature)
+
+3. Commit changes (git commit -m 'Add some feature')
+
+4. Push to branch (git push origin feature/your-feature)
+
+5. Open a Pull Request
+--
+
+## 📄 License
+
+This project is licensed under the MIT License.
+See the LICENSE
+ file for details.
