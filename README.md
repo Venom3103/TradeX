@@ -1,0 +1,82 @@
+# TradeX
+
+> **TradeX** is a **paper trading platform** built with Next.js, TypeScript, Prisma, and Tailwind CSS.  
+> It lets users simulate trading (buy/sell) with a virtual balance, track holdings, and manage portfolios — without risking real money.
+
+---
+
+## 🚀 Features
+
+- 🔐 **User Authentication** (JWT + bcrypt)  
+- 💰 **Virtual Wallet** — each user starts with a default balance of 10,000 units  
+- 📈 **Trade Simulation** — buy/sell assets with tracking of price, quantity, and side (buy/sell)  
+- 📊 **Portfolio Holdings** stored in JSON with real-time updates  
+- 🗂 **Relational Database** with Prisma ORM (PostgreSQL)  
+- 🎨 **Responsive UI** powered by Tailwind CSS + Framer Motion  
+- ⚡ **Data Fetching** with SWR for smooth UI experience  
+
+---
+
+## 🛠 Tech Stack
+
+| Layer            | Technology                             |
+|------------------|-----------------------------------------|
+| Frontend         | Next.js, React, TypeScript, SWR         |
+| Styling          | Tailwind CSS, Framer Motion, PostCSS    |
+| Backend / ORM    | Prisma + @prisma/client                 |
+| Database         | PostgreSQL (via `DATABASE_URL`)         |
+| Auth & Security  | bcryptjs, jsonwebtoken, cookie          |
+| Config           | dotenv                                  |
+
+---
+
+## 🗄 Database Models
+
+### **User**
+| Field      | Type      | Attributes                                |
+|------------|----------|--------------------------------------------|
+| id         | Int       | Primary Key, Auto-increment               |
+| email      | String    | Unique                                    |
+| name       | String    | Required                                  |
+| password   | String?   | Optional (hashed)                         |
+| balance    | Float     | Default: 10000                            |
+| holdings   | Json      | Default: `{}` (stores user portfolio)     |
+| createdAt  | DateTime  | Default: now()                            |
+| updatedAt  | DateTime  | Auto-updated                              |
+| trades     | Trade[]   | One-to-many relation with `Trade`         |
+
+---
+
+### **Trade**
+| Field      | Type      | Attributes                                |
+|------------|----------|--------------------------------------------|
+| id         | Int       | Primary Key, Auto-increment               |
+| symbol     | String    | Asset symbol (e.g., AAPL, TSLA)           |
+| quantity   | Int       | Number of units traded                    |
+| price      | Float     | Price at execution                        |
+| side       | String    | "buy" / "sell"                            |
+| userId     | Int       | Foreign key → User(id)                    |
+| createdAt  | DateTime  | Default: now()                            |
+| user       | User      | Belongs to a User                         |
+
+---
+
+## ⚡ Getting Started
+
+### 1. Prerequisites
+
+- Node.js (v18+ recommended)  
+- npm (comes with Node)  
+- PostgreSQL running locally or in the cloud  
+
+---
+
+### 2. Clone & Install
+
+```bash
+# Clone the repo
+git clone https://github.com/Venom3103/TradeX.git
+cd TradeX
+
+# Install dependencies
+npm install

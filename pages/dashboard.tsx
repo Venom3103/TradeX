@@ -1,0 +1,1 @@
+export default function Dashboard(){ return <div className="min-h-screen p-6 bg-gray-100"><h1 className="text-3xl font-bold mb-4">Dashboard</h1><div className="card"><p>Wallet balance: $10,000</p><p>Welcome to TradeX Pro!</p></div></div>}
