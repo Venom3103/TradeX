@@ -80,3 +80,46 @@ cd TradeX
 
 # Install dependencies
 npm install
+
+```
+
+### 3. Environment Variables
+
+```bash
+DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/tradexdb"
+JWT_SECRET="your_super_secret_key"
+
+```
+
+### 4. Database Setup
+
+```bash
+# Run migrations
+npm run prisma:migrate
+
+# Generate Prisma client
+npm run prisma:generate
+
+# (Optional) Seed DB
+npm run seed
+
+```
+### 5. Run locally
+
+```bash
+npm run dev
+
+The app will be running on 👉 http://localhost:3000
+
+```
+ ## 📜 Scripts
+
+ 
+| Script                    | Description                        |
+| ------------------------- | ---------------------------------- |
+| `npm run dev`             | Start Next.js in development mode  |
+| `npm run build`           | Build the app for production       |
+| `npm start`               | Run the built app in production    |
+| `npm run prisma:generate` | Generate Prisma client             |
+| `npm run prisma:migrate`  | Run Prisma migration (create-only) |
+| `npm run seed`            | Seed DB with initial data          |
