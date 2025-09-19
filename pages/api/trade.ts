@@ -1,32 +1,69 @@
-// /pages/api/trade.ts
-import { NextApiRequest, NextApiResponse } from 'next';
-import prisma from '@/lib/prisma';
-import { getUserFromRequest } from '@/lib/auth';
+// pages/api/trade.ts
+import type { NextApiRequest, NextApiResponse } from 'next';
+import { prisma } from '../../lib/prisma';
+import jwt from 'jsonwebtoken';
+import * as cookie from 'cookie';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret';
+
+type TradeResponse = {
+  message: string;
+  balance?: number;
+  holdings?: Record<string, number>;
+};
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse<TradeResponse>) {
   if (req.method !== 'POST') return res.status(405).json({ message: 'Method not allowed' });
 
-  const user = await getUserFromRequest(req);
-  if (!user) return res.status(401).json({ message: 'Not authenticated' });
+  try {
+    // Get token
+    const rawCookies = req.headers.cookie || '';
+    const parsed = rawCookies ? cookie.parse(rawCookies) : {};
+    const token =
+      parsed.papertradex_token || (req.headers.authorization ? req.headers.authorization.split(' ')[1] : null);
 
-  const { symbol, quantity, side, price } = req.body;
-  if (!symbol || !quantity || !side || !price) return res.status(400).json({ message: 'All fields required' });
+    if (!token) return res.status(401).json({ message: 'Not authenticated' });
 
-  const holdings = user.holdings || {};
-  let newBalance = user.balance;
+    // Verify token and get user
+    const payload: any = jwt.verify(token, JWT_SECRET);
+    const dbUser = await prisma.user.findUnique({ where: { id: Number(payload.sub) } });
+    if (!dbUser) return res.status(401).json({ message: 'User not found' });
 
-  if (side === 'buy') {
-    if (user.balance < price * quantity) return res.status(400).json({ message: 'Insufficient balance' });
-    newBalance -= price * quantity;
-    holdings[symbol] = (holdings[symbol] || 0) + quantity;
-  } else if (side === 'sell') {
-    if ((holdings[symbol] || 0) < quantity) return res.status(400).json({ message: 'Not enough shares to sell' });
-    newBalance += price * quantity;
-    holdings[symbol] -= quantity;
-  } else return res.status(400).json({ message: 'Invalid trade side' });
+    const { symbol, quantity, side, price } = req.body;
+    if (!symbol || !quantity || !side || !price)
+      return res.status(400).json({ message: 'All fields required' });
 
-  await prisma.trade.create({ data: { userId: user.id, symbol, quantity, side, price } });
-  await prisma.user.update({ where: { id: user.id }, data: { balance: newBalance, holdings } });
+    const qty = Number(quantity);
+    const p = Number(price);
+    if (isNaN(qty) || isNaN(p) || qty <= 0 || p <= 0)
+      return res.status(400).json({ message: 'Invalid quantity or price' });
 
-  return res.status(200).json({ message: 'Trade executed', balance: newBalance, holdings });
+    const holdings: Record<string, number> =
+      typeof dbUser.holdings === 'string' ? JSON.parse(dbUser.holdings) : dbUser.holdings || {};
+    let newBalance = dbUser.balance;
+
+    if (side === 'buy') {
+      if (newBalance < p * qty) return res.status(400).json({ message: 'Insufficient balance' });
+      newBalance -= p * qty;
+      holdings[symbol] = (holdings[symbol] || 0) + qty;
+    } else if (side === 'sell') {
+      if ((holdings[symbol] || 0) < qty) return res.status(400).json({ message: 'Not enough shares to sell' });
+      newBalance += p * qty;
+      holdings[symbol] -= qty;
+    } else return res.status(400).json({ message: 'Invalid trade side' });
+
+    await prisma.trade.create({
+      data: { userId: dbUser.id, symbol, quantity: qty, side, price: p },
+    });
+
+    await prisma.user.update({
+      where: { id: dbUser.id },
+      data: { balance: newBalance, holdings },
+    });
+
+    res.status(200).json({ message: 'Trade executed', balance: newBalance, holdings });
+  } catch (err) {
+    console.error('Trade API error:', err);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
 }

@@ -1,40 +1,63 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
-import * as cookie from 'cookie'
-import jwt from 'jsonwebtoken'
-import { prisma } from '../../lib/prisma'
+// pages/api/state.ts
+import type { NextApiRequest, NextApiResponse } from 'next';
+import * as cookie from 'cookie';
+import jwt from 'jsonwebtoken';
+import { prisma } from '../../lib/prisma';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret'
-const SAMPLE_PRICES = { AAPL: 172.45, GOOGL: 2710.55, MSFT: 322.10, TSLA: 255.21 }
+const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const raw = req.headers.cookie || ''
-  const parsed = raw ? cookie.parse(raw) : {}
-  const token = parsed.papertradex_token || (req.headers.authorization ? req.headers.authorization.split(' ')[1] : null)
+type UserType = {
+  id: number;
+  name: string;
+  email: string;
+  balance: number;
+  holdings: Record<string, number>;
+};
 
-  let user = null
+type PricesType = Record<string, number>;
 
-  if (token) {
+const SAMPLE_PRICES: PricesType = {
+  AAPL: 172.45,
+  GOOGL: 2710.55,
+  MSFT: 322.1,
+  TSLA: 255.21,
+};
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<{ user: UserType; prices: PricesType } | { error: string }>
+) {
+  try {
+    const rawCookies = req.headers.cookie || '';
+    const parsed = rawCookies ? cookie.parse(rawCookies) : {};
+    const token =
+      parsed.papertradex_token || (req.headers.authorization ? req.headers.authorization.split(' ')[1] : null);
+
+    if (!token) return res.status(401).json({ error: 'Not authenticated' });
+
+    let user: UserType | null = null;
+
     try {
-      const payload: any = jwt.verify(token, JWT_SECRET)
-      user = await prisma.user.findUnique({ where: { id: Number(payload.sub) } })
-    } catch (e) {
-      user = null
+      const payload: any = jwt.verify(token, JWT_SECRET);
+      const dbUser = await prisma.user.findUnique({ where: { id: Number(payload.sub) } });
+      if (dbUser) {
+        user = {
+          id: dbUser.id,
+          name: dbUser.name,
+          email: dbUser.email,
+          balance: dbUser.balance,
+          holdings: (typeof dbUser.holdings === 'string' ? JSON.parse(dbUser.holdings) : dbUser.holdings) || {},
+        };
+      }
+    } catch (err) {
+      return res.status(401).json({ error: 'Invalid token' });
     }
-  }
 
-  // Fallback if token invalid or user not found
-  if (!user) {
-    user = await prisma.user.findFirst()
-  }
+    if (!user) return res.status(401).json({ error: 'User not found' });
 
-  // If still null, create a dummy object (never undefined)
-  if (!user) {
-    user = {
-      id: 0,
-      name: 'Demo User',
-      email: 'demo@tradex.com',
-    }
+    res.status(200).json({ user, prices: SAMPLE_PRICES });
+  } catch (err) {
+    console.error('API /state error:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
-
-  res.status(200).json({ user, prices: SAMPLE_PRICES })
 }
